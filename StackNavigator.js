@@ -93,7 +93,7 @@ const StackNavigator = () => {
                 <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
                 <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown:false }} />
                 <Stack.Screen name="Places" component={PlacesScreen} />
-                <Stack.Screen name="Map" component={MapScreen} options={{headerShown:false}}/>
+                <Stack.Screen name="Map" component={MapScreen}/>
                 <Stack.Screen name="Info" component={PropertyInfoScreen} />
                 <Stack.Screen name="Rooms" component={RoomsScreen} />
                 <Stack.Screen name="User" component={UserScreen} />
