@@ -12,6 +12,8 @@ import { ModalTitle } from "react-native-modals";
 import { FontAwesome } from '@expo/vector-icons';
 import { Entypo } from "@expo/vector-icons";
 import { ModalContent } from "react-native-modals";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 const PlacesScreen = () => {
     const route = useRoute();
@@ -81,11 +83,7 @@ const PlacesScreen = () => {
                             id: "108",
                             image:
                                 "https://cf.bstatic.com/xdata/images/hotel/max1280x900/433845673.jpg?k=24dd44dc2ac1bfda8aabdbff24571d211f42a4b5cf175fc9043113b61f57f670&o=&hp=1",
-                        },
-                        {
-                            id: "109",
-                            image: "2",
-                        },
+                        }
                     ],
                     rooms: [
                         {
@@ -508,8 +506,26 @@ const PlacesScreen = () => {
             filter: "Cost: High to Low",
         },
     ];
+    const [loading, setLoading] = useState(false);
+    const [items, setItems] = useState([]);
+    useEffect(() => {
+        if (items.length > 0) return;
+
+        setLoading(true);
+
+        const fetchProducts = async () => {
+            const colRef = collection(db, "places");
+            const docsSnap = await getDocs(colRef);
+            docsSnap.forEach((doc) => {
+                items.push(doc.data());
+            });
+            setLoading(false);
+        };
+        fetchProducts();
+    }, [items]);
     const searchPlaces = data?.filter((item) => item.place === route.params.place);
-    const [sortedData, setSortedData] = useState(data);
+    const [sortedData, setSortedData] = useState(items);
+    console.log(searchPlaces)
 
     const compare = (a, b) => {
         if (a.newPrice > b.newPrice) {
@@ -534,11 +550,11 @@ const PlacesScreen = () => {
     const applyFilter = (filter) => {
         setModalVisibile(false)
         switch (filter) {
-            case "Cost: High to Low":
+            case "cost:High to Low":
                 searchPlaces.map((val) => val.properties.sort(compare));
                 setSortedData(searchPlaces);
                 break;
-            case "Cost: Low to High":
+            case "cost:Low to High":
                 searchPlaces.map((val) => val.properties.sort(comparision));
                 setSortedData(searchPlaces);
                 break;
@@ -584,25 +600,27 @@ const PlacesScreen = () => {
                 </Pressable>
             </Pressable>
 
-        
-            <ScrollView style={{ backgroundColor: "#F5F5F5" }}>
-                {sortedData
-                    ?.filter((item) => item.place === route.params.place)
-                    .map((item) =>
-                        item.properties.map((property, index) => (
-                            <PropertyCard
-                                key={index}
-                                rooms={route.params.rooms}
-                                children={route.params.children}
-                                adults={route.params.adults}
-                                selectedDates={route.params.selectedDates}
-                                property={property}
-                                availableRooms={property.rooms}
-                            />
-                        ))
-                    )}
-            </ScrollView>
-
+            {loading ? (
+                <Text>Fetching Places ...</Text>
+            ) : (
+                <ScrollView style={{ backgroundColor: "#F5F5F5" }}>
+                    {sortedData
+                        ?.filter((item) => item.place === route.params.place)
+                        .map((item) =>
+                            item.properties.map((property, index) => (
+                                <PropertyCard
+                                    key={index}
+                                    rooms={route.params.rooms}
+                                    children={route.params.children}
+                                    adults={route.params.adults}
+                                    selectedDates={route.params.selectedDates}
+                                    property={property}
+                                    availableRooms={property.rooms}
+                                />
+                            ))
+                        )}
+                </ScrollView>
+            )}
             <BottomModal
                 onBackdropPress={() => setModalVisibile(!modalVisibile)}
                 swipeDirection={["up", "down"]}
