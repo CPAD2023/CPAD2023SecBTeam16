@@ -94,7 +94,7 @@ const StackNavigator = () => {
                 <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
-                <Stack.Screen name="Search" component={SearchScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Search" component={SearchScreen} />
                 <Stack.Screen name="Places" component={PlacesScreen} />
                 <Stack.Screen name="Map" component={MapScreen} /> 
                 <Stack.Screen name="Info" component={PropertyInfoScreen} />
